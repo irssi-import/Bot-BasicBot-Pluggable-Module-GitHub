@@ -18,7 +18,8 @@ Announce new/changed issues and pull requests
 HELPMSG
 }
 
-
+my %no_heads = ('irssi/scripts.irssi.org' => 1);
+my %ignore_branches_re = ('irssi/irssi' => [ qr{/} ]);
 sub tick {
     my $self = shift;
 
@@ -153,6 +154,11 @@ sub tick {
 	    my $ex = $seen_issues->{'__heads__'.$project}{$ref};
 	    if ($ex ne $sha) {
 		my $commit = $ng->git_data->commit($sha);
+		my $ignore;
+		for my $re (@{$ignore_branches_re{$project}||[]}) {
+		    $ignore ||= $ref =~ $re;
+		}
+		unless ($ignore) {
 		if ($commit && !exists $commit->{error}) {
 		    my $title = ( split /\n+/, $commit->{commit}{message} )[0];
 		    my $url = $commit->{html_url};
@@ -165,6 +171,7 @@ sub tick {
 		       ];
 		} else {
 		    push @push_not, [$ref,$sha];
+		}
 		}
 		$seen_issues->{'__heads__'.$project}{$ref}=$sha;
 	    }
@@ -179,7 +186,7 @@ sub tick {
 		    $_->[0], $_->[1], $_->[2], makeashorterlink('https://github.com/'.$_->[3].'/tree/'.$_->[0]))
 			: sprintf 'branch %s now at %s', @{$_}[0,1]
 		    } @push_not
-		   ) unless $first_run || $notifications{merged};
+		   ) unless $first_run || $notifications{merged} || $no_heads{$project};
 	}
 	
     }}
