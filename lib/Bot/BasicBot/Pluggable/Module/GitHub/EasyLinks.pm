@@ -88,10 +88,10 @@ sub said {
             (?:\s+|-)?
 	    \#?
             (?<num> \d+)
-#        |                
-#	    (?:^|\s+)
-#	    \#
-#            (?<hnum> \d+)
+        |                
+	    (?:^|\s+)
+	    \#
+            (?<hnum> (?!999)\d{3,})
         |                
             # Or a commit SHA
             (?<sha> [0-9a-f]{6,40})
@@ -109,9 +109,9 @@ sub said {
         if ($+{sha}) {
             $thing    = 'commit';
             $thingnum = $+{sha};
-#        } elsif ($+{hnum}) {
-#            $thing    = 'issue';
-#            $thingnum = $+{hnum};
+        } elsif ($+{hnum}) {
+            $thing    = 'issue';
+            $thingnum = $+{hnum};
 	}
 
         my $project = $+{project} || $self->github_project($mess->{channel});
