@@ -10,6 +10,7 @@ use Bot::BasicBot::Pluggable::Module::GitHub;
 use base 'Bot::BasicBot::Pluggable::Module::GitHub';
 use URI::Title;
 use List::Util qw(min max);
+use Mojo::DOM;
 
 sub help {
     return <<HELPMSG;
